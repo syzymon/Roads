@@ -78,7 +78,9 @@ bool newRoute(Map *map, unsigned routeId,
 
     Path new_route;
     bool mem = true;
-    if (!(new_route = get_shortest_path(v1, v2, NULL, &mem)))
+    uint64_t tmp1 = 0;
+    int tmp2 = 0;
+    if (!(new_route = get_shortest_path(v1, v2, NULL, &mem, &tmp1, &tmp2)))
         return false;
 
     if (!routes_add_with_id(map->routes, routeId, new_route))
@@ -101,20 +103,23 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
     Path route_to_extend = routes_get_path(map->routes, routeId);
 
     bool mem1 = true, mem2 = true;
+    uint64_t distance1, distance2;
+    int min_year1, min_year2;
+
 
     City route_begin = routes_get_begin(map->routes, routeId);
     Path starting_from_begin = get_shortest_path(route_begin,
                                                  new_end, route_to_extend,
-                                                 &mem1);
+                                                 &mem1, &distance1, &min_year1);
 
     if (!mem1)
         return false;
 
-    Weight length_from_begin = get_vertex_weight(route_begin);
 
     City route_end = routes_get_end(map->routes, routeId);
     Path starting_from_end = get_shortest_path(route_end,
-                                               new_end, route_to_extend, &mem2);
+                                               new_end, route_to_extend,
+                                               &mem2, &distance2, &min_year2);
 
     if (!mem2) {
         list_shallow_clear(starting_from_begin);
@@ -128,8 +133,8 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
     else if (!starting_from_begin)
         return routes_add_suffix(map->routes, routeId, starting_from_end);
 
-    int compare_from_begin = weight_compare(length_from_begin,
-                                            get_vertex_weight(route_end));
+    int compare_from_begin = operator_less(distance1, min_year1, distance2,
+                                           min_year2);
 
     if (compare_from_begin == 0)
         return false;

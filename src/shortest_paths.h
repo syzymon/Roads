@@ -4,6 +4,6 @@
 #define __SHORTEST_PATHS_H__
 
 Path get_shortest_path(City source, City dest, Path not_allowed,
-                       bool *mem);
+                       bool *mem, uint64_t *dist, int *year);
 
 #endif /* __SHORTEST_PATHS_H__ */

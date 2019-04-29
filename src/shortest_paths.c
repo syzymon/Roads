@@ -21,7 +21,7 @@ void clean_path(Path p) {
 }
 
 static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
-                                    bool *mem) {
+                                    bool *mem, uint64_t *dist, int *year) {
     static size_t call_number = 0;
     ++call_number;
 
@@ -130,9 +130,12 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
 }
 
 
-Path get_shortest_path(City source, City dest, Path not_allowed, bool *mem) {
-    Path source_dest = one_sided_shortest_path(source, dest, not_allowed, mem);
-    Path dest_source = one_sided_shortest_path(dest, source, not_allowed, mem);
+Path get_shortest_path(City source, City dest, Path not_allowed, bool *mem,
+                       uint64_t *dist, int *year) {
+    Path source_dest = one_sided_shortest_path(source, dest, not_allowed, mem,
+                                               dist, year);
+    Path dest_source = one_sided_shortest_path(dest, source, not_allowed, mem,
+                                               dist, year);
     if (mem == false || !source_dest || !dest_source) {
         if (source_dest)
             clean_path(source_dest);

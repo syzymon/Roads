@@ -157,10 +157,6 @@ int operator_less(uint64_t distance1, int year1,
     return 0;
 }
 
-//check if w1 compares less/equal than w2
-int weight_compare(Weight w1, Weight w2) {
-    return operator_less(w1.distance, w1.min_year, w2.distance, w2.min_year);
-}
 
 char *save_vertex_name(const char *input_name) {
     char *result = calloc(strlen(input_name) + 2, sizeof(char));
