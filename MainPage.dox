@@ -9,6 +9,7 @@ Uwaga: aktualna treść zadania znajduje się w [Moodle'u](https://moodle.mimuw.
 
 Tegoroczne duże zadanie polega na zaimplementowaniu operacji na mapach drogowych.
 
-TODO
+Jako drugą część dużego zadania należy zaimplementować program, który, korzystając z modułu zaimplementowanego w części pierwszej, udostępnia operacje na mapie dróg. Program obsługuje tylko jedną mapę dróg. 
 
+Program map obsługuje następujące polecenia z linii wejścia: addRoad, repairRoad, addRoute, getRouteDescription.
 */
