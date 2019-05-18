@@ -68,8 +68,7 @@ bool routes_add_with_id(RoutesList routes, unsigned route_id,
         assert(get_value(it));
         RouteEdge current_edge = get_value(it);
         current_edge->route_id = route_id;
-        bool v = emplace_back(current_edge->edge->routes_passing, it);
-        assert(v);
+        emplace_back(current_edge->edge->routes_passing, it);
     }
 
     RouteEdge starting = list_first_element(route_to_add);
@@ -177,8 +176,7 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
             return false;
         }
 
-        bool b = emplace_back(routes_to_replace, replacement);
-        assert(b);
+        emplace_back(routes_to_replace, replacement);
     }
 
     Iterator route_edges_it = list_begin(road_to_extend->routes_passing);
