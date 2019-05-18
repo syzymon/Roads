@@ -13,7 +13,7 @@ set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Ustawiamy wspólne opcje kompilowania dla wszystkich wariantów projektu.
-set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter")
+set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra")
 # Domyślne opcje dla wariantów Release i Debug są sensowne.
 # Jeśli to konieczne, ustawiamy tu inne.
 # set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
@@ -23,7 +23,19 @@ set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -Wno-unused-variable -Wno-unused-param
 set(SOURCE_FILES
     src/map.c
     src/map.h
-    src/map_main.c src/list.c src/list.h src/hashtable.c src/hashtable.h src/graph.c src/graph.h src/routes.c src/routes.h src/shortest_paths.c src/shortest_paths.h)
+    src/map_main.c
+    src/list.c
+    src/list.h
+    src/hashtable.c
+    src/hashtable.h
+    src/graph.c
+    src/graph.h
+    src/routes.c
+    src/routes.h
+    src/shortest_paths.c 
+    src/shortest_paths.h
+    src/parser.c
+    src/parser.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})
