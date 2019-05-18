@@ -46,19 +46,10 @@ typedef struct DirectedEdge DirectedEdge;
 
 typedef List Path;
 
-struct Weight {
-    uint64_t distance;
-    int min_year;
-};
-
 typedef struct Weight Weight;
-
-Weight make_weight(uint64_t distance, int min_year);
 
 int operator_less(uint64_t distance1, int year1,
                   uint64_t distance2, int year2);
-
-int weight_compare(Weight w1, Weight w2);
 
 City make_vertex(char *city_name);
 
@@ -70,13 +61,9 @@ void erase_road(Road r);
 
 Road get_road(City u, City v);
 
-Weight get_vertex_weight(City v);
-
 bool populate_road(Road r);
 
 void orientate_road(Road r, City new_road_begin);
-
-//struct DirectedEdge *to_route_road(Road r, City start);
 
 bool update_year(Road r, int repair_year);
 

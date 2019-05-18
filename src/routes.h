@@ -1,7 +1,7 @@
-#include "shortest_paths.h"
-
 #ifndef __ROUTES_H__
 #define __ROUTES_H__
+
+#include "shortest_paths.h"
 
 typedef struct Routes *RoutesList;
 
@@ -29,7 +29,9 @@ bool routes_add_suffix(RoutesList routes, unsigned route_id,
 
 bool routes_replace_road(RoutesList routes, Road road_to_extend);
 
-//deletes road_to_delete, also from adj. lists, frees memory, commits replacements
+/** Deletes road_to_delete, also from adj. lists,
+ * frees memory, commits replacements
+ */
 void routes_delete_road(Road road_to_delete);
 
 char const *routes_generate_description(RoutesList routes, unsigned route_id);

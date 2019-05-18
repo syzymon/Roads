@@ -86,6 +86,7 @@ void orientate_road(Road r, City new_road_begin) {
 }
 
 static Iterator get_road_position(City u, City v) {
+
     FOREACH(it, u->neighbours) {
         assert(get_value(it));
         Road r = get_value(it);
@@ -133,17 +134,6 @@ void erase_road(Road r) {
     free(r->routes_passing);
     r->routes_passing = NULL;
     free(r);
-}
-
-Weight make_weight(uint64_t distance, int min_year) {
-    Weight result;
-    result.distance = distance;
-    result.min_year = min_year;
-    return result;
-}
-
-Weight get_vertex_weight(City v) {
-    return make_weight(v->path_data.distance, v->path_data.min_year);
 }
 
 

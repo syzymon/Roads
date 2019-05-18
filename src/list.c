@@ -124,7 +124,6 @@ void list_remove_at(Iterator prev, Iterator to_remove) {
 
 void list_replace_at(List original, Iterator to_be_replaced, List replacement) {
     assert(replacement->begin);
-    // TODO make new end!!!
     Iterator nxt = to_be_replaced->next;
     if (nxt == NULL)
         original->end = replacement->end;

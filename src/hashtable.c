@@ -1,14 +1,14 @@
 #include "hashtable.h"
 
-#define INITIAL_SIZE 1024
+#define INITIAL_SIZE 16
 #define LOAD_FACTOR 0.75
 
 struct Hashtable {
-    size_t capacity;
-    size_t size;
+    size_t capacity; //current size of table
+    size_t size; //current number of elements inserted
     size_t last_alloc_index;
     List *table;
-    List pending_additions;
+    List pending_additions; //items waiting to commit
 };
 
 struct MapNode {
@@ -86,7 +86,7 @@ static uint64_t generate_hash(const char *city_name, bool *correct) {
     return hash;
 }
 
-#define index_of_hash(hashmap, hash) (hash & (hashmap->capacity - 1))
+#define index_of_hash(hashmap, hash) ((hash) & ((hashmap)->capacity - 1))
 
 static Node
 find_node_by_hash(Hashmap hashmap, uint64_t hash, const char *city_name) {
@@ -118,10 +118,11 @@ City create_vertex_by_name(Hashmap hashmap, const char *city_name) {
     bool correct = true;
     uint64_t hash;
     Node found = find_node(hashmap, city_name, &hash, &correct);
+
     if (found)
         return found->vertex;
 
-    if (!reserve_back(hashmap->pending_additions))
+    if (!correct || !reserve_back(hashmap->pending_additions))
         return NULL;
 
     found = calloc(1, sizeof(struct MapNode));
@@ -175,20 +176,20 @@ static bool rehash(Hashmap hashmap) {
         !allocate(hashmap)) {
         return false;
     }
-
     size_t new_capacity = hashmap->capacity * 2;
     List *tmp = realloc(hashmap->table,
                         sizeof(List) * new_capacity);
     if (!tmp)
         return false;
 
+    hashmap->table = tmp;
     hashmap->capacity = new_capacity;
+
     if (!allocate(hashmap))
         return false;
 
     hashmap->capacity /= 2;
 
-    hashmap->table = tmp;
 
     for (size_t i = 0; i < hashmap->capacity; ++i) {
         assert(hashmap->table[i]);

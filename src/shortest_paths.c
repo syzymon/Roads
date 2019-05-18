@@ -1,6 +1,6 @@
 #include "shortest_paths.h"
 
-#define min(a, b) a < b ? a : b
+#define min(a, b) (a) < (b) ? (a) : (b)
 
 const uint64_t INF = ((uint64_t) 1) << 60llu;
 
@@ -21,7 +21,7 @@ void clean_path(Path p) {
 }
 
 static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
-                                    bool *mem, uint64_t *dist, int *year) {
+                                    bool *mem, uint64_t *dst, int *year) {
     static size_t call_number = 0;
     ++call_number;
 
@@ -34,11 +34,11 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
         v1->path_data.blocked = v2->path_data.blocked = true;
     }
 
-    //source is also contained in not_allowed, that's why exclude from blocked
+    //Source is also contained in not_allowed, that's why exclude from blocked
     source->path_data.blocked = false;
     source->path_data.iteration = 0;
 
-    List queue = empty_list(); // TODO always check after empty list
+    List queue = empty_list();
     if (!queue) {
         *mem = false;
         return NULL;
@@ -65,7 +65,6 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
 
             initialize_vertex(v2, call_number);
 
-            //exclude
             if (!v2->path_data.blocked &&
                 (!not_allowed || !(v1 == dest && v2 == source))) {
                 uint64_t dist = v1->path_data.distance + edge->length;
@@ -100,6 +99,9 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
     if (source->path_data.iteration != call_number ||
         source->path_data.distance == INF || source->path_data.doubled)
         return NULL;
+
+    *dst = source->path_data.distance;
+    *year = source->path_data.min_year;
 
     Path result = empty_list();
     if (!result) {

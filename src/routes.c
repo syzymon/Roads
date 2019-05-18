@@ -200,6 +200,7 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
         route_edges_it = next(route_edges_it);
     }
 
+    list_iters_clear(routes_to_replace);
     free(routes_to_replace);
     return true;
 }

@@ -1,3 +1,6 @@
+#ifndef __LIST_H__
+#define __LIST_H__
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -5,11 +8,9 @@
 #include <string.h>
 #include <stdio.h>
 
-#ifndef __LIST_H__
-#define __LIST_H__
-
-#define FOREACH(it, list) for(Iterator it = list_begin(list); \
-                              it && it != next(list_end(list)); it = next(it))
+#define FOREACH(it, list) for(Iterator (it) = list_begin(list); \
+                              (it) && (it) != next(list_end(list)); \
+                              (it) = next(it))
 
 typedef struct LinkedList *List;
 

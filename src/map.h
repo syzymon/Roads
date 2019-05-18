@@ -1,15 +1,17 @@
 /** @file
  * Interfejs klasy przechowującej mapę dróg krajowych
  *
- * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>
+ * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>,
+ * Szymon Tworkowski
  * @copyright Uniwersytet Warszawski
- * @date 20.03.2019
+ * @date 18.05.2019
  */
 
 #ifndef __MAP_H__
 #define __MAP_H__
 
 #include <stdbool.h>
+#include "list.h"
 
 /**
  * Struktura przechowująca mapę dróg krajowych.
@@ -22,7 +24,7 @@ typedef struct Map Map;
  * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
  * zaalokować pamięci.
  */
-Map* newMap(void);
+Map *newMap(void);
 
 /** @brief Usuwa strukturę.
  * Usuwa strukturę wskazywaną przez @p map.
@@ -135,6 +137,35 @@ bool removeRoad(Map *map, const char *city1, const char *city2);
  * @param[in] routeId    – numer drogi krajowej.
  * @return Wskaźnik na napis lub NULL, gdy nie udało się zaalokować pamięci.
  */
-char const* getRouteDescription(Map *map, unsigned routeId);
+char const *getRouteDescription(Map *map, unsigned routeId);
+
+/**
+ * Struktura przechowująca pojedynczy odcinek drogi krajowej
+ */
+struct RoadData {
+    char *city1;
+    char *city2;
+    unsigned length;
+    int builtYear;
+};
+
+typedef struct RoadData *RoadData;
+
+/** @brief Tworzy drogę krajową o podanym numerze i przebiegu. Jeśli
+ * jakieś miasto lub odcinek drogi nie istnieje, to go tworzy. Jeśli
+ * odcinek drogi już istnieje, ale ma wcześniejszy rok budowy
+ * lub ostatniego remontu, to modyfikuje ten atrybut odcinka drogi.
+ * Zakładamy, że przebieg drogi podanej na wejściu nie zawiera samoprzecięć
+ * i cykli oraz że nazwy poszczególnych miast spełniają warunki zadania.
+ * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] routeId    – numer drogi krajowej;
+ * @param[in] path       – wskaźnik na listę kolejnych odcinków drogi krajowej.
+ * @return Wartość @p true, jeśli droga krajowa została dodana.
+ * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
+ * wartość, pewien odcinek drogi już istnieje, ale ma inną długość
+ * albo późniejszy rok budowy lub ostatniego remontu lub nie udało się
+ * zaalokować pamięci.
+ */
+bool addRoute(Map *map, unsigned routeId, List path);
 
 #endif /* __MAP_H__ */

@@ -33,7 +33,7 @@ bool addRoad(Map *map, const char *city1, const char *city2,
 
     City v2 = create_vertex_by_name(map->vertices_table, city2);
 
-    if (get_road(v1, v2)) {
+    if (!v1 || !v2 || get_road(v1, v2)) {
         hashmap_clean_changes(map->vertices_table);
         return false;
     }
@@ -171,4 +171,49 @@ bool removeRoad(Map *map, const char *city1, const char *city2) {
 
 char const *getRouteDescription(Map *map, unsigned routeId) {
     return routes_generate_description(map->routes, routeId);
+}
+
+bool addRoute(Map *map, unsigned routeId, List path) {
+    if (routeId < 1 || routeId > 999 || routes_exists(map->routes, routeId))
+        return false;
+
+    FOREACH(it, path) {
+        RoadData current_data = get_value(it);
+        if (current_data->length == 0 || !current_data->builtYear) return false;
+
+        City v1 = get_vertex_by_name(map->vertices_table, current_data->city1);
+        City v2 = get_vertex_by_name(map->vertices_table, current_data->city2);
+        Road r;
+        if (v1 && v2 && (r = get_road(v1, v2)) &&
+            (r->built_year > current_data->builtYear ||
+             r->length != current_data->length))
+            return false;
+    }
+
+    Path route_to_add = empty_list();
+    FOREACH(it, path) {
+        RoadData current_data = get_value(it);
+
+        City v1 = create_vertex_by_name(map->vertices_table,
+                                        current_data->city1);
+        City v2 = create_vertex_by_name(map->vertices_table,
+                                        current_data->city2);
+
+        Road r = get_road(v1, v2);
+        if (!r) {
+            r = make_road(v1, v2, current_data->length,
+                          current_data->builtYear);
+            populate_road(r);
+        }
+        else {
+            update_year(r, current_data->builtYear);
+        }
+
+        DirectedEdge *directed = calloc(1, sizeof(struct DirectedEdge));
+        directed->start = v1;
+        directed->edge = r;
+        emplace_back(route_to_add, directed);
+        hashmap_commit(map->vertices_table);
+    }
+    return routes_add_with_id(map->routes, routeId, route_to_add);
 }
