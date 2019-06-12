@@ -127,6 +127,10 @@ static void erase_from_neighbours(City c, Road r) {
     }
 }
 
+/**
+ * Usuwa wszystkie informacje o krawędzi - zakładamy, że wierzchołki istnieją
+ * @param r
+ */
 void erase_road(Road r) {
     erase_from_neighbours(r->begin, r);
     erase_from_neighbours(r->end, r);
@@ -136,8 +140,15 @@ void erase_road(Road r) {
     free(r);
 }
 
-
-//returns "sign of a - b" so -1 when a < b
+/**
+ * Jeśli (distance1, year1) < (distance2, year2) zwraca -1,
+ * jeśli są równe to 0, w przeciwnym wypadku 1.
+ * @param distance1
+ * @param year1
+ * @param distance2
+ * @param year2
+ * @return
+ */
 int operator_less(uint64_t distance1, int year1,
                   uint64_t distance2, int year2) {
     if (distance1 != distance2)

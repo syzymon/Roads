@@ -51,6 +51,10 @@ Path routes_get_path(RoutesList routes, unsigned route_id) {
     return routes->routes[route_id]->path;
 }
 
+static void align_route_edge(RouteEdge e) {
+    orientate_road(e->edge, e->start);
+}
+
 bool routes_add_with_id(RoutesList routes, unsigned route_id,
                         Path route_to_add) {
     assert(route_to_add && !is_empty(route_to_add));
@@ -76,7 +80,8 @@ bool routes_add_with_id(RoutesList routes, unsigned route_id,
     new->begin = starting->start;
 
     RouteEdge ending = list_last_element(route_to_add);
-    orientate_road(ending->edge, ending->start);
+    align_route_edge(ending);
+//    orientate_road(ending->edge, ending->start);
 
     new->end = ending->edge->end;
 
@@ -86,10 +91,13 @@ bool routes_add_with_id(RoutesList routes, unsigned route_id,
     return true;
 }
 
-static void align_route_edge(RouteEdge e) {
-    orientate_road(e->edge, e->start);
-}
 
+/**
+ * Ustawia id krawędziom ścieżki i dodatkowo dodaje je na listę dróg krajowych
+ * @param path
+ * @param route_id
+ * @return
+ */
 static bool set_route_id(Path path, unsigned route_id) {
     FOREACH(it, path) {
         assert(get_value(it));
@@ -105,7 +113,8 @@ static bool set_route_id(Path path, unsigned route_id) {
         assert(get_value(it));
         RouteEdge edge = get_value(it);
         edge->route_id = route_id;
-        emplace_back(edge->edge->routes_passing, edge);
+        // TODO: maybe should be edge instead of it
+        emplace_back(edge->edge->routes_passing, it);
     }
     return true;
 }
@@ -194,7 +203,9 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
         }
         list_replace_at(routes_get_path(routes, current_edge->route_id),
                         to_delete, to_insert);
-
+        //deletion of previous edge and helper list
+        free(current_edge);
+        free(to_insert);
         route_edges_it = next(route_edges_it);
     }
 
@@ -206,7 +217,8 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
 void routes_delete_road(Road road_to_remove) {
     list_iters_clear(road_to_remove->routes_passing);
     free(road_to_remove->routes_passing);
-    road_to_remove->routes_passing = NULL;
+//    road_to_remove->routes_passing = NULL;
+    road_to_remove->routes_passing = empty_list();
 }
 
 char const *routes_generate_description(RoutesList routes, unsigned route_id) {

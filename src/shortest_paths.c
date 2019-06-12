@@ -136,8 +136,15 @@ Path get_shortest_path(City source, City dest, Path not_allowed, bool *mem,
                        uint64_t *dist, int *year) {
     Path source_dest = one_sided_shortest_path(source, dest, not_allowed, mem,
                                                dist, year);
+//    uint64_t d1 = *dist;
+//    int y1 = *year;
+
     Path dest_source = one_sided_shortest_path(dest, source, not_allowed, mem,
                                                dist, year);
+
+//    uint64_t d2 = *dist;
+//    int y2 = *year;
+
     if (mem == false || !source_dest || !dest_source) {
         if (source_dest)
             clean_path(source_dest);

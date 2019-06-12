@@ -129,6 +129,9 @@ void list_replace_at(List original, Iterator to_be_replaced, List replacement) {
         original->end = replacement->end;
     to_be_replaced->value = replacement->begin->value;
     to_be_replaced->next = replacement->begin->next;
+    free(replacement->begin);
+    replacement->begin = to_be_replaced;
+//    replacement->begin = to_be_replaced;
     unreserve_back(replacement);
     replacement->end->next = nxt;
 }
