@@ -1,6 +1,6 @@
 #include "hashtable.h"
 
-#define INITIAL_SIZE 16
+#define INITIAL_SIZE 4
 #define LOAD_FACTOR 0.75
 
 struct Hashtable {
@@ -228,12 +228,16 @@ static bool rehash(Hashmap hashmap) {
 static void clean_map_nodes_list(List nodes_list) {
     for (Iterator it = list_begin(nodes_list); it;) {
         Iterator next_iterator = next(it);
-        assert(get_value(it));
+//        assert(get_value(it));
+
         Node to_delete = get_value(it);
 
-        erase_vertex(to_delete->vertex);
-
-        free(to_delete);
+        if (to_delete) {
+            if (to_delete->vertex)
+                erase_vertex(to_delete->vertex);
+            to_delete->vertex = NULL;
+            free(to_delete);
+        }
         free(it);
 
         it = next_iterator;

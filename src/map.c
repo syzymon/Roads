@@ -129,7 +129,7 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
     else if (!starting_from_begin && !starting_from_end)
         return false;
     else if (!starting_from_end)
-        return routes_add_prefix(map->routes, routeId, starting_from_end);
+        return routes_add_prefix(map->routes, routeId, starting_from_begin);
     else if (!starting_from_begin)
         return routes_add_suffix(map->routes, routeId, starting_from_end);
 

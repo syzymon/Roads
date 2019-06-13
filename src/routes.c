@@ -102,16 +102,6 @@ static bool set_route_id(Path path, unsigned route_id) {
     FOREACH(it, path) {
         assert(get_value(it));
         RouteEdge edge = get_value(it);
-        if (!reserve_back(edge->edge->routes_passing)) {
-            list_shallow_clear(path);
-            free(path);
-            return false;
-        }
-    }
-
-    FOREACH(it, path) {
-        assert(get_value(it));
-        RouteEdge edge = get_value(it);
         edge->route_id = route_id;
         // TODO: maybe should be edge instead of it
         emplace_back(edge->edge->routes_passing, it);
@@ -127,6 +117,7 @@ bool routes_add_prefix(RoutesList routes, unsigned route_id,
     RouteEdge second_beginning = list_first_element(path_to_append);
     current->begin = second_beginning->start;
     list_merge(path_to_append, current->path);
+    current->path = path_to_append;
     return true;
 }
 
@@ -164,22 +155,18 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
                                                                      route_id),
                                              &mem, &placeholder1,
                                              &placeholder2);
-        bool space_for_propagation = true;
         FOREACH(inner_edge_it, replacement) {
             RouteEdge inner_edge = get_value(inner_edge_it);
             inner_edge->route_id = current_edge->route_id;
-            if (!reserve_back(inner_edge->edge->routes_passing))
-                space_for_propagation = false;
         }
 
-        if (!mem || !replacement || !reserve_back(routes_to_replace) ||
-            !space_for_propagation) {
+        if (!mem || !replacement || !reserve_back(routes_to_replace)) {
             FOREACH(delete_it, routes_to_replace) {
-                assert(get_value(it));
-                Path to_delete = get_value(it);
-                list_iters_clear(to_delete);
-                free(to_delete);
+                assert(get_value(delete_it));
+                Path to_delete = get_value(delete_it);
+                list_shallow_clear(to_delete);
             }
+
             list_shallow_clear(routes_to_replace);
             free(routes_to_replace);
             return false;
@@ -187,6 +174,7 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
 
         emplace_back(routes_to_replace, replacement);
     }
+
 
     Iterator route_edges_it = list_begin(road_to_extend->routes_passing);
     FOREACH(it, routes_to_replace) {
@@ -197,12 +185,12 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
 
         List to_insert = get_value(it);
 
+        list_replace_at(routes_get_path(routes, current_edge->route_id),
+                        to_delete, to_insert);
         FOREACH(it_to_update_route, to_insert) {
             RouteEdge inner_edge = get_value(it_to_update_route);
             emplace_back(inner_edge->edge->routes_passing, it_to_update_route);
         }
-        list_replace_at(routes_get_path(routes, current_edge->route_id),
-                        to_delete, to_insert);
         //deletion of previous edge and helper list
         free(current_edge);
         free(to_insert);
