@@ -5,8 +5,8 @@
 const uint64_t INF = ((uint64_t) 1) << 60llu;
 
 
-void initialize_vertex(City v, size_t iteration) {
-    if (v->path_data.iteration == iteration) return;
+void initialize_vertex(City v, size_t iteration, bool dest) {
+    if (v->path_data.iteration == iteration && !dest) return;
     v->path_data.iteration = iteration;
     v->path_data.min_year = INT_MAX;
     v->path_data.distance = INF;
@@ -43,7 +43,7 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
         *mem = false;
         return NULL;
     }
-    initialize_vertex(dest, call_number);
+    initialize_vertex(dest, call_number, true);
     dest->path_data.distance = 0;
     if (!emplace_back(queue, dest)) {
         list_shallow_clear(queue);
@@ -63,7 +63,7 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
 
             City v2 = edge->end;
 
-            initialize_vertex(v2, call_number);
+            initialize_vertex(v2, call_number, false);
 
             if (!v2->path_data.blocked &&
                 (!not_allowed || !(v1 == dest && v2 == source))) {
