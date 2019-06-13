@@ -6,40 +6,51 @@
 
 typedef struct Edge *Road;
 
+/**
+ * Informacje potrzebne do algorytmu znajdowania najkrótszych ścieżek.
+ */
 struct ShortestPathsData {
-    uint64_t distance;
-    int min_year;
-    size_t iteration;
-    bool doubled;
-    bool blocked;
-    bool queued;
-    Road backward;
+    uint64_t distance; /**< Najkrótsza odległość. **/
+    int min_year; /**< Minimalny rok budowy. **/
+    size_t iteration; /**< Numer wywołania algorytmu najkrótszej ścieżki. **/
+    bool doubled; /**< Czy wierzchołek został zdublowany. **/
+    bool blocked; /**< Czy wierzchołek jest zablokowany. **/
+    bool queued; /**< Czy wierzchołek jest na kolejce. **/
+    Road backward; /**< Powrót do poprzedniego wierzchołka na ścieżce. **/
 };
 
 typedef struct ShortestPathsData SPFAData;
 
+/**
+ * Wierzchołek grafu.
+ */
 struct Vertex {
-    char *city_name;
-    List neighbours;
-    SPFAData path_data;
+    char *city_name; /**< Nazwa wierzchołka. **/
+    List neighbours; /**< Lista sąsiadów wierzchołka. **/
+    SPFAData path_data; /**< Informacje o najkrótszych ścieżkach. **/
 };
 
 typedef struct Vertex *City;
 
+/**
+ * Krawędź grafu. Dla każdej krawędzi istnieje dokładnie jeden taki obiekt.
+ */
 struct Edge {
-    City begin;
-    City end;
-    unsigned length;
-    int built_year;
-    bool refcount;
-    List routes_passing; //of elements Iterator to DirectedEdge
+    City begin; /**< Początek krawędzi. **/
+    City end; /**< Koniec krawędzi. **/
+    unsigned length; /**< Długość krawędzi. **/
+    int built_year; /**< Rok budowy. **/
+    bool refcount; /**< Czy oba wskaźniki istnieją. **/
+    List routes_passing; /**< Lista iteratorów na krawędź drogi krajowej. **/
 };
 
-
+/**
+ * Krawędź skierowana - element drogi krajowej.
+ */
 struct DirectedEdge {
-    Road edge;
-    City start;
-    unsigned route_id;
+    Road edge; /**< Krawędź właściwa. **/
+    City start; /**< Początek krawędzi skierowanej. **/
+    unsigned route_id; /**< Numer drogi krajowej. **/
 };
 
 typedef struct DirectedEdge DirectedEdge;

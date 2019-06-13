@@ -2,9 +2,12 @@
 #include "hashtable.h"
 #include "routes.h"
 
+/**
+ * Struktura przechowująca mapę dróg krajowych.
+ */
 struct Map {
-    Hashmap vertices_table;
-    RoutesList routes;
+    Hashmap vertices_table; /**< Tablica haszująca napisów na wierzchołki. **/
+    RoutesList routes; /**< Lista dróg krajowych. **/
 };
 
 
@@ -80,7 +83,8 @@ bool newRoute(Map *map, unsigned routeId,
     bool mem = true;
     uint64_t tmp1 = 0;
     int tmp2 = 0;
-    if (!(new_route = get_shortest_path(v1, v2, NULL, &mem, &tmp1, &tmp2)))
+    if (!(new_route = get_shortest_path(v1, v2, NULL, &mem, &tmp1, &tmp2,
+                                        false)))
         return false;
 
     if (!routes_add_with_id(map->routes, routeId, new_route))
@@ -108,9 +112,10 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
 
 
     City route_begin = routes_get_begin(map->routes, routeId);
-    Path starting_from_begin = get_shortest_path(route_begin,
-                                                 new_end, route_to_extend,
-                                                 &mem1, &distance1, &min_year1);
+    Path starting_from_begin = get_shortest_path(new_end,
+                                                 route_begin, route_to_extend,
+                                                 &mem1, &distance1, &min_year1,
+                                                 false);
 
     if (!mem1)
         return false;
@@ -119,7 +124,8 @@ bool extendRoute(Map *map, unsigned routeId, const char *city) {
     City route_end = routes_get_end(map->routes, routeId);
     Path starting_from_end = get_shortest_path(route_end,
                                                new_end, route_to_extend,
-                                               &mem2, &distance2, &min_year2);
+                                               &mem2, &distance2, &min_year2,
+                                               false);
 
     if (!mem2) {
         list_shallow_clear(starting_from_begin);
@@ -216,4 +222,11 @@ bool addRoute(Map *map, unsigned routeId, List path) {
         hashmap_commit(map->vertices_table);
     }
     return routes_add_with_id(map->routes, routeId, route_to_add);
+}
+
+bool removeRoute(Map *map, unsigned routeId) {
+    if (routeId < 1 || routeId > 999 || !routes_exists(map->routes, routeId))
+        return false;
+    routes_remove_id(map->routes, routeId);
+    return true;
 }

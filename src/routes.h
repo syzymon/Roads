@@ -34,6 +34,8 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend);
  */
 void routes_delete_road(Road road_to_delete);
 
+void routes_remove_id(RoutesList routes, unsigned route_id);
+
 char const *routes_generate_description(RoutesList routes, unsigned route_id);
 
 void routes_wipeout(RoutesList routes);

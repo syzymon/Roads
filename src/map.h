@@ -103,6 +103,19 @@ bool newRoute(Map *map, unsigned routeId,
  */
 bool extendRoute(Map *map, unsigned routeId, const char *city);
 
+/**
+ * Usuwa z mapy dróg drogę krajową o podanym numerze, jeśli taka istnieje,
+ * dając wynik true, a w przeciwnym przypadku, tzn. gdy podana droga krajowa
+ * nie istnieje lub podany numer jest niepoprawny, niczego nie zmienia w mapie
+ * dróg, dając wynik false. Nie usuwa odcinków dróg ani miast.
+ * @param map
+ * @param routeId
+ * @return Wartość @p true, jeśli droga krajowa została usunięta.
+ * Wartość @p false, gdy podana droga krajowa
+ * nie istnieje lub podany numer jest niepoprawny
+ */
+bool removeRoute(Map *map, unsigned routeId);
+
 /** @brief Usuwa odcinek drogi między dwoma różnymi miastami.
  * Usuwa odcinek drogi między dwoma miastami. Jeśli usunięcie tego odcinka drogi
  * powoduje przerwanie ciągu jakiejś drogi krajowej, to uzupełnia ją
@@ -140,15 +153,18 @@ bool removeRoad(Map *map, const char *city1, const char *city2);
 char const *getRouteDescription(Map *map, unsigned routeId);
 
 /**
- * Struktura przechowująca pojedynczy odcinek drogi krajowej
+ * Struktura przechowująca pojedynczy odcinek drogi krajowej.
  */
 struct RoadData {
-    char *city1;
-    char *city2;
-    unsigned length;
-    int builtYear;
+    char *city1; /**< Pierwsze miasto drogi. **/
+    char *city2; /**< Drugie miasto drogi. **/
+    unsigned length; /**< Długość drogi. **/
+    int builtYear; /**< Rok budowy drogi. **/
 };
 
+/**
+ * Wskaźnik na odcinek drogi krajowej.
+ */
 typedef struct RoadData *RoadData;
 
 /** @brief Tworzy drogę krajową o podanym numerze i przebiegu. Jeśli

@@ -23,12 +23,6 @@ bool update_year(Road r, int repair_year) {
 void erase_vertex(City u) {
     if (u->neighbours) {
         for (Iterator it = list_begin(u->neighbours); it;) {
-
-            if(get_value(it) == NULL){
-
-                printf("EEE");
-            }
-//            assert(get_value(it));
             Iterator nxt = next(it);
             Road r = get_value(it);
             if (r->refcount) {

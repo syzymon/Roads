@@ -21,7 +21,8 @@ void clean_path(Path p) {
 }
 
 static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
-                                    bool *mem, uint64_t *dst, int *year) {
+                                    bool *mem, uint64_t *dst, int *year,
+                                    bool remove) {
     static size_t call_number = 0;
     ++call_number;
 
@@ -66,7 +67,7 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
             initialize_vertex(v2, call_number, false);
 
             if (!v2->path_data.blocked &&
-                (!not_allowed || !(v1 == dest && v2 == source))) {
+                (!not_allowed || !(v1 == dest && v2 == source && remove))) {
                 uint64_t dist = v1->path_data.distance + edge->length;
                 int min_edge = min(v1->path_data.min_year, edge->built_year);
                 int compares = operator_less(dist, min_edge,
@@ -133,17 +134,13 @@ static Path one_sided_shortest_path(City source, City dest, Path not_allowed,
 
 
 Path get_shortest_path(City source, City dest, Path not_allowed, bool *mem,
-                       uint64_t *dist, int *year) {
+                       uint64_t *dist, int *year, bool remove) {
     Path source_dest = one_sided_shortest_path(source, dest, not_allowed, mem,
-                                               dist, year);
-//    uint64_t d1 = *dist;
-//    int y1 = *year;
+                                               dist, year, remove);
 
     Path dest_source = one_sided_shortest_path(dest, source, not_allowed, mem,
-                                               dist, year);
+                                               dist, year, remove);
 
-//    uint64_t d2 = *dist;
-//    int y2 = *year;
 
     if (mem == false || !source_dest || !dest_source) {
         if (source_dest)

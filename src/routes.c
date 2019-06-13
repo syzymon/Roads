@@ -2,17 +2,24 @@
 
 #define MAXIMUM_ROUTES_AMOUNT 1000
 
+/**
+ * Informacje o drodze krajowej.
+ */
 struct RouteData {
-    City begin, end;
-    List path;
+    City begin; /**< Początek drogi krajowej. **/
+    City end; /**< Koniec drogi krajowej. **/
+    List path; /**< Kolejne elementy drogi krajowej. **/
 };
 
 typedef struct RouteData *Route;
 
 typedef struct DirectedEdge *RouteEdge;
 
+/**
+ * Struktura przechowująca listę dróg krajowych.
+ */
 struct Routes {
-    Route routes[MAXIMUM_ROUTES_AMOUNT];
+    Route routes[MAXIMUM_ROUTES_AMOUNT]; /**< Tablica dróg krajowych. **/
 };
 
 RoutesList routes_empty_list() {
@@ -81,7 +88,6 @@ bool routes_add_with_id(RoutesList routes, unsigned route_id,
 
     RouteEdge ending = list_last_element(route_to_add);
     align_route_edge(ending);
-//    orientate_road(ending->edge, ending->start);
 
     new->end = ending->edge->end;
 
@@ -103,7 +109,6 @@ static bool set_route_id(Path path, unsigned route_id) {
         assert(get_value(it));
         RouteEdge edge = get_value(it);
         edge->route_id = route_id;
-        // TODO: maybe should be edge instead of it
         emplace_back(edge->edge->routes_passing, it);
     }
     return true;
@@ -154,7 +159,7 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
                                                              current_edge->
                                                                      route_id),
                                              &mem, &placeholder1,
-                                             &placeholder2);
+                                             &placeholder2, true);
         FOREACH(inner_edge_it, replacement) {
             RouteEdge inner_edge = get_value(inner_edge_it);
             inner_edge->route_id = current_edge->route_id;
@@ -191,7 +196,7 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
             RouteEdge inner_edge = get_value(it_to_update_route);
             emplace_back(inner_edge->edge->routes_passing, it_to_update_route);
         }
-        //deletion of previous edge and helper list
+
         free(current_edge);
         free(to_insert);
         route_edges_it = next(route_edges_it);
@@ -205,7 +210,6 @@ bool routes_replace_road(RoutesList routes, Road road_to_extend) {
 void routes_delete_road(Road road_to_remove) {
     list_iters_clear(road_to_remove->routes_passing);
     free(road_to_remove->routes_passing);
-//    road_to_remove->routes_passing = NULL;
     road_to_remove->routes_passing = empty_list();
 }
 
@@ -220,14 +224,13 @@ char const *routes_generate_description(RoutesList routes, unsigned route_id) {
 
     Path route = routes_get_path(routes, route_id);
 
-    //calculate size inb4
     FOREACH(it, route) {
         assert(get_value(it));
         RouteEdge current_edge = get_value(it);
         Road road_to_add = current_edge->edge;
         City edge_start = current_edge->start;
 
-        result_length += 3; //semicolons
+        result_length += 3; //średniki
         result_length += strlen(edge_start->city_name);
         sprintf(buf, "%u", road_to_add->length);
         result_length += strlen(buf);
@@ -279,4 +282,40 @@ void routes_wipeout(RoutesList routes) {
         }
     }
     free(routes);
+}
+
+static void erase_from_passing(Road c, Iterator list_it) {
+    Iterator prev = NULL;
+    for (Iterator it = list_begin(c->routes_passing); it;) {
+        assert(get_value(it));
+        Iterator current = get_value(it);
+        if (current == list_it) {
+            if (list_begin(c->routes_passing) == list_end(c->routes_passing))
+                clean_list(c->routes_passing);
+            else if (list_begin(c->routes_passing) == it) {
+                list_set_begin(c->routes_passing, next(it));
+            }
+            else if (list_end(c->routes_passing) == it) {
+                list_set_end(c->routes_passing, prev);
+            }
+            list_remove_at(prev, it);
+            free(it);
+            break;
+        }
+        prev = it;
+        it = next(it);
+    }
+}
+
+void routes_remove_id(RoutesList routes, unsigned route_id) {
+    FOREACH(it, routes->routes[route_id]->path) {
+        RouteEdge e = get_value(it);
+        erase_from_passing(e->edge, it);
+    }
+
+    list_shallow_clear(routes->routes[route_id]->path);
+    free(routes->routes[route_id]->path);
+    routes->routes[route_id]->path = NULL;
+    free(routes->routes[route_id]);
+    routes->routes[route_id] = NULL;
 }

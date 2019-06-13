@@ -22,7 +22,7 @@
 #include "map.h"
 
 /** @brief Wczytuje i obsługuje pojedyncze polecenie ze standardowego wejścia.
- * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in,out] m    – wskaźnik na strukturę przechowującą mapę dróg;
  * @return Wartość @p 0, jeśli polecenie wykonało się poprawnie;
  * wartość @p 1, jeśli wykonanie polecenia zakończyło się błędem;
  * wartość @p -1, jeśli nie ma już więcej poleceń do wczytania;

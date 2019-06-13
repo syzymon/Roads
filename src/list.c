@@ -1,13 +1,19 @@
 #include "list.h"
 
+/**
+ * Element listy jednokierunkowej.
+ */
 struct Element {
-    void *value;
-    Iterator next;
+    void *value; /**< Wartość elementu. **/
+    Iterator next; /**< Następnik elementu. **/
 };
 
+/**
+ * Struktura reprezentująca listę jednokierunkową - bez wartowników.
+ */
 struct LinkedList {
-    Iterator begin;
-    Iterator end;
+    Iterator begin; /**< Początek listy. **/
+    Iterator end /**< Koniec listy. **/;
 };
 
 void clean_list(List l) {
@@ -99,11 +105,11 @@ bool emplace_back(List l, void *element_value) {
     l->end->next->value = element_value;
     assert(element_value != NULL);
     l->end->next->next = NULL;
-    l->end = l->end->next; //check if this works
+    l->end = l->end->next;
     return true;
 }
 
-void push_back(List l, Iterator it) { //CUTS OFF NEXT!!!
+void push_back(List l, Iterator it) {
     it->next = NULL;
     if (!(l->begin)) {
         l->begin = l->end = it;
@@ -131,7 +137,6 @@ void list_replace_at(List original, Iterator to_be_replaced, List replacement) {
     to_be_replaced->next = replacement->begin->next;
     free(replacement->begin);
     replacement->begin = to_be_replaced;
-//    replacement->begin = to_be_replaced;
     unreserve_back(replacement);
     replacement->end->next = nxt;
 }
@@ -150,7 +155,6 @@ void list_merge(List first, List second) {
     free(second);
 }
 
-//Cleans list elements and their values - ONE LEVEL DEEP!!!
 void list_shallow_clear(List l) {
     if (!l) return;
     for (Iterator it = l->begin; it;) {

@@ -3,17 +3,23 @@
 #define INITIAL_SIZE 4
 #define LOAD_FACTOR 0.75
 
+/**
+ * Tablica z haszowaniem.
+ */
 struct Hashtable {
-    size_t capacity; //current size of table
-    size_t size; //current number of elements inserted
-    size_t last_alloc_index;
-    List *table;
-    List pending_additions; //items waiting to commit
+    size_t capacity; /**< Aktualny rozmiar tablicy. **/
+    size_t size; /**< Liczba aktualnie wstawionych elementów. **/
+    size_t last_alloc_index; /**< Ostatni indeks zarezerwowanej pamięci. **/
+    List *table; /**< Tablica list. **/
+    List pending_additions; /**< Elementy czekające na zatwierdzenie. **/
 };
 
+/**
+ * Pojedynczy element listy wewnątrz haszmapy.
+ */
 struct MapNode {
-    uint64_t hash;
-    City vertex;
+    uint64_t hash; /**< Hasz elementu, mod 2^64. **/
+    City vertex; /**< Wierzchołek mapy. **/
 };
 
 typedef struct MapNode *Node;
@@ -228,7 +234,6 @@ static bool rehash(Hashmap hashmap) {
 static void clean_map_nodes_list(List nodes_list) {
     for (Iterator it = list_begin(nodes_list); it;) {
         Iterator next_iterator = next(it);
-//        assert(get_value(it));
 
         Node to_delete = get_value(it);
 

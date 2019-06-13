@@ -114,7 +114,6 @@ static int add_route(Map *m, int route_nr) {
     } while (current[2] != NULL);
 
     if (!result && !current[1]) {
-        //We sort all cities identifiers, to ensure they are unique on a path
         char *arr[arr_len];
         size_t index = 0;
         arr[index++] = ((RoadData) list_first_element(to_insert))->city1;
@@ -155,6 +154,44 @@ static int repair_road(Map *m) {
     return repairRoad(m, args[0], args[1], repair_year) == false ? 1 : 0;
 }
 
+unsigned get_route_id(long long converted){
+    return converted <= UINT_MAX ? converted : 0;
+}
+
+static int new_route(Map *m) {
+    char *args[3];
+    if (read_args(args, 3, true))
+        return 1;
+    long long route_id = get_route_id(str_to_int(args[0]));
+    return newRoute(m, route_id, args[1], args[2]) == false ? 1 : 0;
+}
+
+static int extend_route(Map *m) {
+    char *args[2];
+    if (read_args(args, 2, true))
+        return 1;
+
+    long long route_id = get_route_id(str_to_int(args[0]));
+    return extendRoute(m, route_id, args[1]) == false ? 1 : 0;
+}
+
+static int remove_road(Map *m){
+    char *args[2];
+    if (read_args(args, 2, true))
+        return 1;
+
+    return removeRoad(m, args[0], args[1]) == false ? 1 : 0;
+}
+
+static int remove_route(Map *m){
+    char *args[1];
+    if (read_args(args, 1, true))
+        return 1;
+
+    long long route_id = get_route_id(str_to_int(args[0]));
+    return removeRoute(m, route_id) == false ? 1 : 0;
+}
+
 static bool is_zero(const char *s) {
     size_t l = strlen(s);
     for (size_t i = 0; i < l; ++i)
@@ -162,6 +199,7 @@ static bool is_zero(const char *s) {
             return false;
     return true;
 }
+
 
 static int get_route_description(Map *m) {
     char *args[1];
@@ -194,6 +232,14 @@ static int execute_command(char *command_str, Map *m) {
         return repair_road(m);
     else if (!strcmp(command_name, "getRouteDescription"))
         return get_route_description(m);
+    else if (!strcmp(command_name, "newRoute"))
+        return new_route(m);
+    else if (!strcmp(command_name, "extendRoute"))
+        return extend_route(m);
+    else if (!strcmp(command_name, "removeRoad"))
+        return remove_road(m);
+    else if (!strcmp(command_name, "removeRoute"))
+        return remove_route(m);
     else {
         long long candidate = str_to_int(command_name);
         if (candidate >= 1 && candidate <= 999)
@@ -207,14 +253,14 @@ int read_line(Map *m) {
     size_t linesize = 0;
     ssize_t len = getline(&line, &linesize, stdin);
 
-    if (ferror(stdin)) { //Check if getline failed to allocate memory
+    if (ferror(stdin)) {
         free(line);
         return LINE_MEM_ERR;
     }
 
     to_free = line;
 
-    int result = 2; //sentinel
+    int result = 2;
     if (len == -1)
         result = LINE_EOF;
     else if ((len >= 1 && line[0] == '#') || (len == 1 && line[0] == '\n'))
@@ -225,7 +271,6 @@ int read_line(Map *m) {
         if ((line[0] == SEP[0] || (len >= 2 && line[len - 2] == SEP[0])))
             result = LINE_ERR;
 
-        //Zero character guarantees incorrect input.
         for (int i = 0; i < len - 1; ++i) {
             if (line[i] == 0) {
                 result = LINE_ERR;
@@ -233,7 +278,6 @@ int read_line(Map *m) {
             }
         }
 
-        //No way to have a correct input with double separator.
         for (int i = 0; i < len - 2; ++i) {
             if (line[i] == SEP[0] && line[i + 1] == SEP[0]) {
                 result = LINE_ERR;
