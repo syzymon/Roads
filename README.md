@@ -3,6 +3,7 @@ Student's work (Individual Programming Project 2018/2019 course) at University o
 
 The purpose of the project, written in pure C11, was to implement a CLI for a
 map of cities, routes and roads, which form a weighted graph, and numerous CRUD operations on them.
+There is a Doxygen documentation in Polish provided.
 
 The project required concise and easy to use implementations of i.a.
 * SPFA algorithm (```src/shortest_paths.c``` file)
