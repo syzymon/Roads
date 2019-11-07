@@ -1,7 +1,7 @@
 # Roads
 Student's work (Individual Programming Project 2018/2019 course) at University of Warsaw 
 
-Written in pure C11 Student's work. The purpose of the project was to implement a CLI for a
+The purpose of the project, written in pure C11, was to implement a CLI for a
 map of cities, routes and roads, which form a weighted graph, and numerous CRUD operations on them.
 
 The project required concise and easy to use implementations of i.a.
